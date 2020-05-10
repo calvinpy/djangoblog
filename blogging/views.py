@@ -1,7 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django import forms
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import loader
 from blogging.models import Post
+from blogging.forms import PostForm
 
 
 def stub_view(request, *args, **kwargs):
@@ -33,3 +35,18 @@ def detail_view(request, post_id):
         raise Http404
     context = {'post': post}
     return render(request, 'blogging/detail.html', context)
+
+
+def add_model(request):
+    if request.method == "POST":
+        form = PostForm(request.POST)
+        if form.is_valid():
+            model_instance = form.save(commit=False)
+            model_instance.save()
+            return redirect('/')
+    else:
+        return render(request, "post_form.html", {'form': form})
+
+
+
+
